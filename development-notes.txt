@@ -1,5 +1,5 @@
 Operation: Make selections from db table based on datetime
 Tests: File exists; 
        Each data segment has length more than or equal to required minimum;
-
+       Epoch-price pairs should be in correct segments;
        
