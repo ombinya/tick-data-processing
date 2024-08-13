@@ -1,4 +1,5 @@
 Operation: Make selections from db table based on datetime
 Tests: File exists; 
-       Each data segment has length more than or equal to required minimum
+       Each data segment has length more than or equal to required minimum;
+
        

@@ -20,6 +20,16 @@ class TestRefiner(unittest.TestCase):
 
         self.assertFalse(self.refiner.db_file_exists())
 
+    def test_all_segments_valid(self):
+        segments = [[1 for i in range(self.refiner.minimumsegmentsize - 1)] for j in range(6)]
+        self.assertFalse(self.refiner.all_segments_valid(segments))
+
+        segments = [[1 for i in range(self.refiner.minimumsegmentsize)] for j in range(6)]
+        self.assertTrue(self.refiner.all_segments_valid(segments))
+
+        segments = [[1 for i in range(self.refiner.minimumsegmentsize + 1)] for j in range(6)]
+        self.assertTrue(self.refiner.all_segments_valid(segments))
+
 
 if __name__ == "__main__":
     unittest.main()
