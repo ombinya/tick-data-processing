@@ -1,5 +1,6 @@
 from sqlite3 import connect
 import os
+from datetime import datetime
 
 
 class Refiner:
@@ -17,6 +18,29 @@ class Refiner:
                 return False
 
         return True
+
+    def get_segments(self, selection):
+        segments = [[] for i in range(6)]
+
+        for row in selection:
+            dateobj = datetime.fromtimestamp(row[0])
+            segmentindex = dateobj.minute // 10
+            segments[segmentindex].append(row)
+
+        return segments
+
+        # with connect(self.dbfilepath) as con:
+        #     cur = con.cursor()
+        #
+        #     cur.execute(
+        #         """SELECT * FROM frxEURUSD WHERE epoch >= 1707922800 AND epoch < 1707926400"""
+        #     )
+        #
+        #     selection = cur.fetchall()
+        #
+        #     return len(selection)
+
+
 
 
 if __name__ == "__main__":
