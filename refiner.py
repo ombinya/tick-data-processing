@@ -4,8 +4,13 @@ from datetime import datetime
 
 
 class Refiner:
-    def __init__(self, dbfilepath):
-        self.dbfilepath = dbfilepath
+    def __init__(self, asset):
+        self.asset = asset
+        # Directory of the current script
+        self.currentdir = os.path.dirname(os.path.abspath(__file__))
+        # Construct the path to the db file
+        self.dbfilepath = self.currentdir + "/data/" + asset + ".db"
+        print(self.dbfilepath)
         # Each segment is 10 minutes (600 seconds) long; I need at least half number (300) of ticks
         self.minimumsegmentsize = int((10 * 60) / 2)
 
@@ -41,9 +46,7 @@ class Refiner:
         #     return len(selection)
 
 
-
-
 if __name__ == "__main__":
-    dbfilepath = "data/eurusd.db"
-    refiner = Refiner(dbfilepath)
+    asset = "eurusd"
+    refiner = Refiner(asset)
 
