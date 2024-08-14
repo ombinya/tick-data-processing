@@ -15,6 +15,28 @@ class Refiner:
         # Each segment is 10 minutes (600 seconds) long; I need at least half number (300) of ticks
         self.minimumsegmentsize = int((10 * 60) / 2)
 
+    def refine_data(self):
+        if not self.db_file_exists(self.sourcedbfilepath):
+            print("The source db file for the asset '{}' does not exist".format(self.asset))
+            return
+
+        self.create_destination_db_file()
+
+    def create_destination_db_file(self):
+        try:
+            os.remove(self.destinationdbfilepath)
+        except FileNotFoundError:
+            pass
+
+        with connect(self.destinationdbfilepath) as con:
+            cur = con.cursor()
+
+            cur.execute("""
+                CREATE TABLE data (year, month, day, hour, segment_comparisons, hour_comparison)
+            """)
+
+        con.close()
+
     def db_file_exists(self, filepath):
         return os.path.exists(filepath)
 

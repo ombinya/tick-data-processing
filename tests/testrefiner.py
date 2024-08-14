@@ -8,13 +8,26 @@ class TestRefiner(unittest.TestCase):
         asset = "eurusd"
         self.refiner = Refiner(asset)
 
-    def test_db_file_exists(self):
-        self.assertTrue(self.refiner.db_file_exists(self.refiner.sourcedbfilepath))
+    def test_refine_data(self):
+        print("Testing refine_data")
+        self.assertFalse(self.refiner.db_file_exists(self.refiner.destinationdbfilepath))
+        self.refiner.refine_data()
+        self.assertTrue(self.refiner.db_file_exists(self.refiner.destinationdbfilepath))
 
+    def test_create_destination_db_file(self):
+        print("Testing refine_data")
+        self.assertFalse(self.refiner.db_file_exists(self.refiner.destinationdbfilepath))
+        self.refiner.create_destination_db_file()
+        self.assertTrue(self.refiner.db_file_exists(self.refiner.destinationdbfilepath))
+
+    def test_db_file_exists(self):
+        print("Testing db_file_exists")
+        self.assertTrue(self.refiner.db_file_exists(self.refiner.sourcedbfilepath))
         falserefiner = Refiner("asset")
         self.assertFalse(falserefiner.db_file_exists(falserefiner.sourcedbfilepath))
 
     def test_all_segments_valid(self):
+        print("Testing all_segments_valid")
         segments = [[1 for i in range(self.refiner.minimumsegmentsize - 1)] for j in range(6)]
         self.assertFalse(self.refiner.all_segments_valid(segments))
 
@@ -25,6 +38,7 @@ class TestRefiner(unittest.TestCase):
         self.assertTrue(self.refiner.all_segments_valid(segments))
 
     def test_get_segments(self):
+        print("Testing get_segments")
         selection = [
             (1707922800, .1),  # 2024-02-14 18:00
             (1707922800 + (60 * 9), .1),  # 2024-02-14 18:09
@@ -51,6 +65,13 @@ class TestRefiner(unittest.TestCase):
 
         actual = self.refiner.get_segments(selection)
         self.assertEqual(actual, expected)
+
+    def tearDown(self):
+        print("Running teardown")
+        try:
+            os.remove(self.refiner.destinationdbfilepath)
+        except FileNotFoundError:
+            pass
 
 
 if __name__ == "__main__":
