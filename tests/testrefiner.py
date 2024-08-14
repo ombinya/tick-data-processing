@@ -8,6 +8,9 @@ class TestRefiner(unittest.TestCase):
         asset = "eurusd"
         self.refiner = Refiner(asset)
 
+    def test_refine_data(self):
+        pass
+
     def test_db_file_exists(self):
         self.assertTrue(self.refiner.db_file_exists())
 

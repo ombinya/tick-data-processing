@@ -8,14 +8,18 @@ class Refiner:
         self.asset = asset
         # Directory of the current script
         self.currentdir = os.path.dirname(os.path.abspath(__file__))
-        # Construct the path to the db file
-        self.dbfilepath = self.currentdir + "/data/" + asset + ".db"
-        print(self.dbfilepath)
+        # Construct the path to the source db file
+        self.sourcedbfilepath = self.currentdir + "/data/" + asset + ".db"
+        # Construct the path to the source db file
+        self.destinationdbfilepath = self.currentdir + "/data/refined" + asset + ".db"
         # Each segment is 10 minutes (600 seconds) long; I need at least half number (300) of ticks
         self.minimumsegmentsize = int((10 * 60) / 2)
 
+    def refine_data(self):
+        pass
+
     def db_file_exists(self):
-        return os.path.exists(self.dbfilepath)
+        return os.path.exists(self.sourcedbfilepath)
 
     def all_segments_valid(self, segments):
         for segment in segments:
