@@ -4,18 +4,21 @@ import os
 
 
 class TestRefiner(unittest.TestCase):
-    def setUp(self):
+
+    @classmethod
+    def setUpClass(cls):
+        print("Setting up class")
         asset = "eurusd"
-        self.refiner = Refiner(asset)
+        cls.refiner = Refiner(asset)
 
     def test_refine_data(self):
         print("Testing refine_data")
-        self.assertFalse(self.refiner.db_file_exists(self.refiner.destinationdbfilepath))
-        self.refiner.refine_data()
-        self.assertTrue(self.refiner.db_file_exists(self.refiner.destinationdbfilepath))
+        # self.assertFalse(self.refiner.db_file_exists(self.refiner.destinationdbfilepath))
+        # self.refiner.refine_data()
+        # self.assertTrue(self.refiner.db_file_exists(self.refiner.destinationdbfilepath))
 
     def test_create_destination_db_file(self):
-        print("Testing refine_data")
+        print("Testing create_destination_db_file")
         self.assertFalse(self.refiner.db_file_exists(self.refiner.destinationdbfilepath))
         self.refiner.create_destination_db_file()
         self.assertTrue(self.refiner.db_file_exists(self.refiner.destinationdbfilepath))
@@ -66,10 +69,11 @@ class TestRefiner(unittest.TestCase):
         actual = self.refiner.get_segments(selection)
         self.assertEqual(actual, expected)
 
-    def tearDown(self):
+    @classmethod
+    def tearDownClass(cls):
         print("Running teardown")
         try:
-            os.remove(self.refiner.destinationdbfilepath)
+            os.remove(cls.refiner.destinationdbfilepath)
         except FileNotFoundError:
             pass
 

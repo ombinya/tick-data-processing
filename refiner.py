@@ -13,6 +13,8 @@ class Refiner:
         # Construct the path to the source db file
         self.destinationdbfilepath = self.currentdir + "/data/refined" + asset + ".db"
         # Each segment is 10 minutes (600 seconds) long; I need at least half number (300) of ticks
+        self.sourcetablename = "frxEURUSD"
+
         self.minimumsegmentsize = int((10 * 60) / 2)
 
     def refine_data(self):
@@ -21,6 +23,40 @@ class Refiner:
             return
 
         self.create_destination_db_file()
+
+        with connect(self.sourcedbfilepath) as con:
+            cur = con.cursor()
+
+            cur.execute("SELECT * FROM {} LIMIT 1".format(self.sourcetablename))
+            firstrow = cur.fetchone()
+            firstepoch = firstrow[0]
+            firstdatetime = datetime.fromtimestamp(firstepoch)
+            firsthour = datetime(
+                firstdatetime.year,
+                firstdatetime.month,
+                firstdatetime.day,
+                firstdatetime.hour
+            )
+
+            startepoch = int(firsthour.timestamp())
+
+            cur.execute("SELECT * FROM {} ORDER BY epoch DESC LIMIT 1;".format(self.sourcetablename))
+            lastrow = cur.fetchone()
+            lastepoch = lastrow[0]
+            endepoch = int(lastepoch)
+
+            for i in range(startepoch, endepoch, 3600):
+                j = i + 3600
+
+                selection = cur.execute("""
+                    SELECT * FROM {}
+                    WHERE (epoch >= {} AND epoch < {})
+                """.format(self.sourcetablename, i, j)).fetchall()
+
+                segments = self.get_segments(selection)
+
+                print(segments[0])
+                break
 
     def create_destination_db_file(self):
         try:
@@ -72,4 +108,5 @@ class Refiner:
 if __name__ == "__main__":
     asset = "eurusd"
     refiner = Refiner(asset)
+    refiner.refine_data()
 
