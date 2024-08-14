@@ -8,14 +8,11 @@ class TestRefiner(unittest.TestCase):
         asset = "eurusd"
         self.refiner = Refiner(asset)
 
-    def test_refine_data(self):
-        pass
-
     def test_db_file_exists(self):
-        self.assertTrue(self.refiner.db_file_exists())
+        self.assertTrue(self.refiner.db_file_exists(self.refiner.sourcedbfilepath))
 
         falserefiner = Refiner("asset")
-        self.assertFalse(falserefiner.db_file_exists())
+        self.assertFalse(falserefiner.db_file_exists(falserefiner.sourcedbfilepath))
 
     def test_all_segments_valid(self):
         segments = [[1 for i in range(self.refiner.minimumsegmentsize - 1)] for j in range(6)]

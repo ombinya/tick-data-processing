@@ -15,11 +15,8 @@ class Refiner:
         # Each segment is 10 minutes (600 seconds) long; I need at least half number (300) of ticks
         self.minimumsegmentsize = int((10 * 60) / 2)
 
-    def refine_data(self):
-        pass
-
-    def db_file_exists(self):
-        return os.path.exists(self.sourcedbfilepath)
+    def db_file_exists(self, filepath):
+        return os.path.exists(filepath)
 
     def all_segments_valid(self, segments):
         for segment in segments:
