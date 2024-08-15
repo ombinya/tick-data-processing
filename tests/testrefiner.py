@@ -11,6 +11,8 @@ class TestRefiner(unittest.TestCase):
         asset = "eurusd"
         cls.refiner = Refiner(asset)
 
+        cls.refiner.destinationdbfilepath = cls.refiner.destinationdbfilepath.replace(".db", "-test.db")
+
         cls.selection = [
             (1707922800, .1),  # 2024-02-14 18:00
             (1707922800 + (60 * 9), .1),  # 2024-02-14 18:09
@@ -37,12 +39,6 @@ class TestRefiner(unittest.TestCase):
 
         cls.selection_averages = [.1, .25, .45, .65, .85, .75]
         cls.selection_comparisons = "UUUUD"
-
-    def test_refine_data(self):
-        print("Testing refine_data")
-        # self.assertFalse(self.refiner.db_file_exists(self.refiner.destinationdbfilepath))
-        # self.refiner.refine_data()
-        # self.assertTrue(self.refiner.db_file_exists(self.refiner.destinationdbfilepath))
 
     def test_create_destination_db_file(self):
         print("Testing create_destination_db_file")

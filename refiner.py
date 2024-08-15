@@ -41,10 +41,14 @@ class Refiner:
 
             startepoch = int(firsthour.timestamp())
 
-            cur.execute("SELECT * FROM {} ORDER BY epoch DESC LIMIT 1;".format(self.sourcetablename))
+            cur.execute("SELECT * FROM {} ORDER BY epoch DESC LIMIT 1".format(self.sourcetablename))
             lastrow = cur.fetchone()
             lastepoch = lastrow[0]
             endepoch = int(lastepoch)
+
+            data = []
+            counter = 0
+            previousday = None
 
             for i in range(startepoch, endepoch, 3600):
                 j = i + 3600
@@ -62,13 +66,37 @@ class Refiner:
                     openingprice = selection[0][1]
                     closingprice = selection[-1][1]
 
-                    selectionhourcomparison = self.comparison(openingprice, closingprice)
+                    hourcomparison = self.comparison(openingprice, closingprice)
                 else:
                     selectioncomparisons = "-"
-                    selectionhourcomparison = "-"
+                    hourcomparison = "-"
 
+                openingdatetime = datetime.fromtimestamp(i)
 
-                break
+                data.append([
+                    openingdatetime.year,
+                    openingdatetime.month,
+                    openingdatetime.day,
+                    openingdatetime.hour,
+                    selectioncomparisons,
+                    hourcomparison
+                ])
+
+                if previousday != openingdatetime.day:
+                    print("Day:", openingdatetime)
+                    previousday = openingdatetime.day
+
+                # counter += 1
+                # if counter == 24:
+                #     break
+
+            for i in range(len(data) - 1):
+                nexthourcomparison = data[i + 1][-1]
+                data[i].append(nexthourcomparison)
+
+            print("Inserting data")
+            self.insert_data(data[:-1])
+            print("Done!")
 
     def create_destination_db_file(self):
         try:
@@ -80,7 +108,7 @@ class Refiner:
             cur = con.cursor()
 
             cur.execute("""
-                CREATE TABLE data (year, month, day, hour, segment_comparisons, hour_comparison)
+                CREATE TABLE data (year, month, day, hour, segment_comparisons, hour_comparison, next_hour_comparison)
             """)
 
         con.close()
@@ -133,6 +161,17 @@ class Refiner:
             return "U"
         else:
             return "X"
+
+    def insert_data(self, data):
+        with connect(self.destinationdbfilepath) as con:
+            cur = con.cursor()
+
+            cur.executemany("""
+                INSERT INTO data
+                VALUES (?,?,?,?,?,?,?)
+            """, data)
+
+        con.close()
 
 
 if __name__ == "__main__":
