@@ -57,11 +57,17 @@ class Refiner:
                 segments = self.get_segments(selection)
                 
                 if self.all_segments_valid(segments):
+                    selectionaverages = self.get_selection_averages(segments)
+                    selectioncomparisons = self.get_selection_comparisons(selectionaverages)
+                    openingprice = selection[0][1]
+                    closingprice = selection[-1][1]
 
-                    # get_segment_averages(segments)
-                    # get_segment_comparisons(segment_averages)
-                    # hour comparison = comparison(selection[0], selection[-1])
-                    print(segments[0])
+                    selectionhourcomparison = self.comparison(openingprice, closingprice)
+                else:
+                    selectioncomparisons = "-"
+                    selectionhourcomparison = "-"
+
+
                 break
 
     def create_destination_db_file(self):
@@ -109,17 +115,24 @@ class Refiner:
 
         return averages
 
+    def get_selection_comparisons(self, averages):
+        comparisons = []
+        for i in range(len(averages) - 1):
+            a = averages[i]
+            b = averages[i + 1]
 
-        # with connect(self.dbfilepath) as con:
-        #     cur = con.cursor()
-        #
-        #     cur.execute(
-        #         """SELECT * FROM frxEURUSD WHERE epoch >= 1707922800 AND epoch < 1707926400"""
-        #     )
-        #
-        #     selection = cur.fetchall()
-        #
-        #     return len(selection)
+            comparison = self.comparison(a, b)
+            comparisons.append(comparison)
+
+        return "".join(comparisons)
+
+    def comparison(self, a, b):
+        if a > b:
+            return "D"
+        elif a < b:
+            return "U"
+        else:
+            return "X"
 
 
 if __name__ == "__main__":

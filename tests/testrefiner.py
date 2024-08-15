@@ -36,6 +36,7 @@ class TestRefiner(unittest.TestCase):
         ]
 
         cls.selection_averages = [.1, .25, .45, .65, .85, .75]
+        cls.selection_comparisons = "UUUUD"
 
     def test_refine_data(self):
         print("Testing refine_data")
@@ -79,6 +80,12 @@ class TestRefiner(unittest.TestCase):
 
         for pair in zip(actual, expected):
             self.assertAlmostEqual(*pair)
+
+    def test_get_selection_comparisons(self):
+        actual = self.refiner.get_selection_comparisons(self.selection_averages)
+        expected = self.selection_comparisons
+
+        self.assertEqual(actual, expected)
 
     @classmethod
     def tearDownClass(cls):
