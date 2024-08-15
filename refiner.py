@@ -1,6 +1,7 @@
 from sqlite3 import connect
 import os
 from datetime import datetime
+from statistics import mean
 
 
 class Refiner:
@@ -54,8 +55,13 @@ class Refiner:
                 """.format(self.sourcetablename, i, j)).fetchall()
 
                 segments = self.get_segments(selection)
+                
+                if self.all_segments_valid(segments):
 
-                print(segments[0])
+                    # get_segment_averages(segments)
+                    # get_segment_comparisons(segment_averages)
+                    # hour comparison = comparison(selection[0], selection[-1])
+                    print(segments[0])
                 break
 
     def create_destination_db_file(self):
@@ -76,13 +82,6 @@ class Refiner:
     def db_file_exists(self, filepath):
         return os.path.exists(filepath)
 
-    def all_segments_valid(self, segments):
-        for segment in segments:
-            if len(segment) < self.minimumsegmentsize:
-                return False
-
-        return True
-
     def get_segments(self, selection):
         segments = [[] for i in range(6)]
 
@@ -92,6 +91,24 @@ class Refiner:
             segments[segmentindex].append(row)
 
         return segments
+    
+    def all_segments_valid(self, segments):
+        for segment in segments:
+            if len(segment) < self.minimumsegmentsize:
+                return False
+
+        return True
+
+    def get_selection_averages(self, segments):
+        averages = []
+
+        for segment in segments:
+            prices = [row[1] for row in segment]
+            segmentaverage = mean(prices)
+            averages.append(segmentaverage)
+
+        return averages
+
 
         # with connect(self.dbfilepath) as con:
         #     cur = con.cursor()
